@@ -4,26 +4,33 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
 const path = require('path');
-const app = express();
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
-// Load env vars
 dotenv.config();
 
-// Connect to database
-connectDB();
+const app = express();
 
-
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// 🔥 CORS FIRST
 app.use(cors({
-  origin: ['http://e-commerce-web-1-hxlq.onrender.com', 'http://localhost:3000'],
+  origin: [
+    'https://e-commerce-web-1-hxlq.onrender.com',
+    'http://localhost:3000'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+app.options('*', cors());
+
+// Static files
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+// Body parsers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// DB
+connectDB();
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -32,16 +39,13 @@ app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 
-// Root route
 app.get('/api', (req, res) => {
   res.json({ message: 'E-Commerce API is running...' });
 });
 
-// Error handler
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 8001;
-
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
