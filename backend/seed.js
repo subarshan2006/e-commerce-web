@@ -6,6 +6,8 @@ const connectDB = require('./config/db');
 
 dotenv.config();
 
+
+
 const seedDatabase = async () => {
   try {
     await connectDB();
