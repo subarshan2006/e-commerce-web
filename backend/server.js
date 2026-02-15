@@ -20,8 +20,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.options('/*', cors());
-
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
